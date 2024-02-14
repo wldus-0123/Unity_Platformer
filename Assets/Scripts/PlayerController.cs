@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
 
 	[SerializeField] float jumpSpeed;
 
+	[SerializeField] LayerMask groundCheck;
+
 	private Vector2 moveDir;  // 입력받을 위치값
 	private bool isGround;    // 플레이어가 땅바닥에 있는지 여부
 
@@ -95,13 +97,26 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
+	private int groundCount;
+
 	private void OnCollisionEnter2D(Collision2D collision)
 	{
-		isGround = true;
+		if(groundCheck.Contain(collision.gameObject.layer))  // groundCheck 레이어들 중에 collision.gameObject.layer가 있나?
+		{
+			groundCount++;
+			isGround = groundCount > 0;
+			animator.SetBool("IsGround", isGround);
+		}
+
 	}
 
 	private void OnCollisionExit2D(Collision2D collision)
 	{
-		isGround = false;
+		if (groundCheck.Contain(collision.gameObject.layer))
+		{
+			groundCount--;
+			isGround = groundCount > 0;
+			animator.SetBool("IsGround", isGround);
+		}
 	}
 }
